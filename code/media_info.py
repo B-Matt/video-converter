@@ -4,6 +4,16 @@ from utils import Utils
 
 
 class FormatInfo(object):
+    """
+    Describes video format container.
+    Atributes are:
+     * format_name - format short name
+     * format_name_long - format full name
+     * bit_rate - video bitrate
+     * duration - video duration in seconds
+     * size - file size
+    """
+
     def __init__(self):
         self.format_name = None
         self.format_name_long = None
@@ -12,6 +22,9 @@ class FormatInfo(object):
         self.size = None
 
     def parse_format_data(self, key, val):
+        """
+        Parses format part of ffprobe output (key=value).
+        """
         if key == "format_name":
             self.format_name = val
         elif key == "format_long_name":
@@ -25,6 +38,25 @@ class FormatInfo(object):
 
 
 class StreamInfo(object):
+    """
+    Describes video stream container.
+    Atributes are:
+     * type - stream type (audio or video)
+     * codec_name - codec name
+     * duration - stream duration (in seconds)
+     * bit_rate - stream bitrate (in bytes/second)
+    Video attributes:
+     * width - video width
+     * height - video height
+     * fps - stream FPS
+    Audio attributes:
+     * channels - number of channels in the stream
+     * sample_rate - sample rate (Hz)
+    Meta-data:
+     * create_time - time when stream is created
+     * language - stream language
+    """
+
     def __init__(self):
         self.type = None
         self.codec_name = None
@@ -45,6 +77,9 @@ class StreamInfo(object):
         self.language = None
 
     def parse_stream_data(self, key, val):
+        """
+        Parses stream part of ffprobe output (key=value).
+        """
         if key == 'codec_type':
             self.type = val
         elif key == 'codec_name':
@@ -69,6 +104,10 @@ class StreamInfo(object):
             self.language = val
 
     def calculate_fps(self, val):
+        """
+        Calculates FPS from given value.
+        Returns 0 if is not possible to divide two numbers.
+        """
         n, d = val.split('/')
         n = Utils.parse_float(n)
         d = Utils.parse_float(d)
