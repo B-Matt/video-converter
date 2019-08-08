@@ -1,17 +1,18 @@
 # ffprobe -print_format json -show_format -show_streams promo_insta.mp4
 
+import json as json
 from utils import Utils
 
 
 class FormatInfo(object):
     """
-    Describes video format container.
-    Atributes are:
-     * format_name - format short name
-     * format_name_long - format full name
-     * bit_rate - video bitrate
-     * duration - video duration in seconds
-     * size - file size
+        Describes video format container.
+        Atributes are:
+          * format_name - format short name
+          * format_name_long - format full name
+          * bit_rate - video bitrate
+          * duration - video duration in seconds
+          * size - file size
     """
 
     def __init__(self):
@@ -39,22 +40,22 @@ class FormatInfo(object):
 
 class StreamInfo(object):
     """
-    Describes video stream container.
-    Atributes are:
-     * type - stream type (audio or video)
-     * codec_name - codec name
-     * duration - stream duration (in seconds)
-     * bit_rate - stream bitrate (in bytes/second)
-    Video attributes:
-     * width - video width
-     * height - video height
-     * fps - stream FPS
-    Audio attributes:
-     * channels - number of channels in the stream
-     * sample_rate - sample rate (Hz)
-    Meta-data:
-     * create_time - time when stream is created
-     * language - stream language
+        Describes video stream container.
+        Atributes are:
+          * type - stream type (audio or video)
+          * codec_name - codec name
+          * duration - stream duration (in seconds)
+          * bit_rate - stream bitrate (in bytes/second)
+        Video attributes:
+          * width - video width
+          * height - video height
+          * fps - stream FPS
+        Audio attributes:
+          * channels - number of channels in the stream
+          * sample_rate - sample rate (Hz)
+        Meta-data:
+          * create_time - time when stream is created
+          * language - stream language
     """
 
     def __init__(self):
@@ -119,5 +120,38 @@ class StreamInfo(object):
 
 class MediaInfo(object):
     """
-    JSON formater of ffprobe data!
+        JSON formater of ffprobe data!
+        Attributes are:
+          * format_info - FormatInfo object
+          * streams_info - List of StreamInfo objects
     """
+
+    def __init__(self):
+        self.format_info = FormatInfo()
+        self.streams_info = []
+
+    def parse_raw_data(self, data):
+        """
+            Parses JSON output into media objects.
+        """
+        decoded_data = json.loads(data)
+
+        self.parse_format(decoded_data["format"])
+        self.parse_streams(decoded_data["streams"])
+
+    def parse_format(self, data):
+        """
+            Parses format part of ffprobe output into objects variables.
+        """
+        for key, value in data.items():
+            self.format_info.parse_format_data(key, value)
+
+    def parse_streams(self, raw):
+        """
+            Parses streams part of ffprobe output into objects variables.
+        """
+        for data in raw:
+            stream = StreamInfo()
+            self.streams_info.append(stream)
+            for key, value in data.items():
+                stream.parse_stream_data(key, value)
