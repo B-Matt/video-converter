@@ -1,4 +1,2 @@
-from .media_info import MediaInfo
-from .media_info import FormatInfo
-from .media_info import StreamInfo
-from .ffmpeg import FFmpeg
+from code.media_info import *
+from code.ffmpeg import *
